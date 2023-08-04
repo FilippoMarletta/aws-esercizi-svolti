@@ -11,9 +11,7 @@
  * 
  */
 
-let counter = 0;
-
-
+const counter = 0;
 
 
 export const lambdaHandler = async (event, context) => {
