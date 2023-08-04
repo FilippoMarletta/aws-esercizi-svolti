@@ -61,7 +61,7 @@ Resources:
     Properties:
       StageName: Staging
       DefinitionBody:
-        "Fn::Transform":
+        Fn::Transform:
           Name: AWS::Include
           Parameters:
             Location: ./openapi.yaml
