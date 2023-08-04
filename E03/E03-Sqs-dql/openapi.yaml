@@ -1,0 +1,65 @@
+openapi: 3.0.2
+info:
+  title: SendToQueueApi
+  description: SendToQueueApi
+  version: 1.0.0
+servers:
+  - url: 
+    Fn:Sub: 
+      -'https://${SqsExercizeApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging'
+      -SqsExercizeApiGateway: 
+        Ref: SqsExercizeApiGateway
+      -AWS::Region: 
+        $ref: AWS::Region
+paths:
+  /send:
+    post:
+      summary: SendToQueue
+      description: SendToQueue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendToQueueApiRequest'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendToQueueApiResponse'
+      x-amazon-apigateway-integration:
+        credentials: !GetAtt NewSqsExercizeFunctionRole.Arn
+        uri: 
+          Fn:Sub: 
+          - 'arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${FirstQueue}'
+          - AWS::Region: 
+              $ref: AWS::Region
+            AWS::AccountId: 
+              $ref: AWS::AccountId
+            FirstQueue: 
+              $ref: FirstQueue
+        responses:
+          default:
+            statusCode: '200'
+        requestParameters:
+          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+        requestTemplates:
+          application/json: 'Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body)'
+        passthroughBehavior: never
+        httpMethod: POST
+        type: aws
+components:
+  schemas:
+    SendToQueueApiRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    SendToQueueApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
