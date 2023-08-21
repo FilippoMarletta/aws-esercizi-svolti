@@ -1,16 +1,9 @@
-openapi: 3.0.2
+openapi: 3.0.1
 info:
   title: SendToQueueApi
   description: SendToQueueApi
   version: 1.0.0
-servers:
-  - url: 
-    Fn:Sub: 
-      -'https://${SqsExercizeApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging'
-      -SqsExercizeApiGateway: 
-        Ref: SqsExercizeApiGateway
-      -AWS::Region: 
-        $ref: AWS::Region
+
 paths:
   /send:
     post:
@@ -20,32 +13,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SendToQueueApiRequest'
+              $ref: "#/components/schemas/SendToQueueApiRequest"
       responses:
-        '200':
+        "200":
           description: 200 response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SendToQueueApiResponse'
+                $ref: "#/components/schemas/SendToQueueApiResponse"
       x-amazon-apigateway-integration:
-        credentials: !GetAtt NewSqsExercizeFunctionRole.Arn
-        uri: 
-          Fn:Sub: 
-          - 'arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${FirstQueue}'
-          - AWS::Region: 
-              $ref: AWS::Region
-            AWS::AccountId: 
-              $ref: AWS::AccountId
-            FirstQueue: 
-              $ref: FirstQueue
+        credentials:
+          Fn::GetAtt: NewSqsExercizeFunctionRole.Arn
+        uri:
+          Fn::Sub:
+            - "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${FirstQueue}"
+            - FirstQueue: { "Fn::GetAtt" : [ FirstQueue, Arn ] }
         responses:
           default:
-            statusCode: '200'
+            statusCode: "200"
         requestParameters:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
-          application/json: 'Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body)'
+          application/json: "Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body)"
         passthroughBehavior: never
         httpMethod: POST
         type: aws

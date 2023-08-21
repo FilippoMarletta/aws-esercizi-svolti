@@ -23,7 +23,8 @@ Resources:
         SqsEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt FirstQueue.Arn
+            Queue: 
+              Fn::GetAtt: FirstQueue.Arn
             BatchSize: 1
             MaximumBatchingWindowInSeconds: 1
             Enabled: true
@@ -31,7 +32,8 @@ Resources:
   NewSqsExercizeFunctionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::StackName}-SqsExercizeFunctionRole
+      RoleName: 
+        Fn::Sub: '${AWS::StackName}-SqsExercizeFunctionRole'
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -48,13 +50,9 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: sqs:SendMessage
-                Resource: !GetAtt FirstQueue.Arn
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: CLOUDWATCH-LOGS-ARN
+                Resource: 
+                  Fn::GetAtt: FirstQueue.Arn
+              
 
   SqsExercizeApiGateway:
     Type: AWS::Serverless::Api
@@ -66,16 +64,6 @@ Resources:
           Parameters:
             Location: ./openapi.yaml
 
-  # SQS Queue
-  FirstQueue:
-    Type: AWS::SQS::Queue
-    Properties:
-      MessageRetentionPeriod: 60
-      VisibilityTimeout: 30
-      RedrivePolicy:
-        deadLetterTargetArn: !GetAtt FirstQueueDlq.Arn
-        maxReceiveCount: 3
-
   # SQS Queue DLQ
   FirstQueueDlq:
     Type: AWS::SQS::Queue
@@ -83,16 +71,34 @@ Resources:
       MessageRetentionPeriod: 60
       VisibilityTimeout: 30
 
+  # SQS Queue
+  FirstQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 60
+      VisibilityTimeout: 30
+      RedrivePolicy:
+        deadLetterTargetArn: 
+          Fn::GetAtt: FirstQueueDlq.Arn
+        maxReceiveCount: 3
+
+  
+  
+
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   SqsExercizeApi:
     Description: "API Gateway endpoint URL for Prod stage for Sqs Exercize function"
-    Value: !Sub "https://${SqsExercizeApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/sqs/"
+    Value: 
+      Fn::Sub: "https://${SqsExercizeApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/sqs/"
   SqsExercizeFunction:
     Description: "Sqs Exercize Lambda Function ARN"
-    Value: !GetAtt SqsExercizeFunction.Arn
+    Value: 
+      Fn::GetAtt: SqsExercizeFunction.Arn
   SqsExercizeFunctionIamRole:
     Description: "Implicit IAM Role created for Sqs Exercize function"
-    Value: !GetAtt SqsExercizeFunctionRole.Arn
+    Value: 
+      Fn::GetAtt: SqsExercizeFunctionRole.Arn
