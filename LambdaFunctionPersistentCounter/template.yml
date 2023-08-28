@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  LambdaFunction Es01-02
+  LambdaFunctionPersistentCounter
 
   -funzione Lambda incrementa contatore ad ogni esecuzione
   -endpoint api gateway che esegue una funzione lambda e restituisce il risultato
