@@ -11,12 +11,17 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  DeployStage:
+    Type: String
+    Default: "Dev"
+
 Resources:
   ExercizeApiGateway:
     Type: AWS::Serverless::Api
     Properties:
       Name: ExercizeApiGateway
-      StageName: Staging
+      StageName: !Ref DeployStage
 
 
   ExercizeFunction:
