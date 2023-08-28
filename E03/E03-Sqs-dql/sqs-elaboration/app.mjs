@@ -11,14 +11,40 @@
  * 
  */
 
+
+function validityCheck( record ){
+    //console.log(record.body)
+    let s = record.body;
+    const body = JSON.parse(s);
+    const word1 = body.word1;
+    const word2 = body.word2;
+    console.log(body);
+
+    return new Promise((resolve, reject) => {
+        let combined;
+        try {
+            combined = word1 + word2;
+            if(combined.length > 6){
+                reject(new Error(record.MessageId));
+            }
+            resolve({combinedWord: combined})
+        }
+        catch {
+            reject(new Error(record.MessageId));
+        }
+    })
+}
+
 export const lambdaHandler = async (event, context) => {
     try {
-        return {
-            'statusCode': 200,
-            'body': JSON.stringify({
-                message: 'hello world',
-            })
-        }
+        const records = event.Records;
+        const promises = records.map( record => validityCheck(record));
+        
+        const executedPromises = await Promise.allSettled(promises);
+        console.log(executedPromises);
+        const rejectedPromises = executedPromises.filter(promise => promise.status == "rejected");
+        const batchItemFailures = rejectedPromises.map( promise => ({itemIdentifier: promise.reason}) );
+        return {batchItemFailures};
     } catch (err) {
         console.log(err);
         return err;

@@ -25,8 +25,9 @@ Resources:
           Properties:
             Queue: 
               Fn::GetAtt: FirstQueue.Arn
-            BatchSize: 1
-            MaximumBatchingWindowInSeconds: 1
+            BatchSize: 10
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
             Enabled: true
 
   NewSqsExercizeFunctionRole:
@@ -67,16 +68,11 @@ Resources:
   # SQS Queue DLQ
   FirstQueueDlq:
     Type: AWS::SQS::Queue
-    Properties:
-      MessageRetentionPeriod: 60
-      VisibilityTimeout: 30
 
   # SQS Queue
   FirstQueue:
     Type: AWS::SQS::Queue
     Properties:
-      MessageRetentionPeriod: 60
-      VisibilityTimeout: 30
       RedrivePolicy:
         deadLetterTargetArn: 
           Fn::GetAtt: FirstQueueDlq.Arn
