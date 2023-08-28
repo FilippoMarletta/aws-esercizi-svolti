@@ -17,24 +17,20 @@ paths:
       responses:
         "200":
           description: 200 response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SendToQueueApiResponse"
       x-amazon-apigateway-integration:
         credentials:
           Fn::GetAtt: NewSqsExercizeFunctionRole.Arn
         uri:
           Fn::Sub:
             - "arn:aws:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${FirstQueue}"
-            - FirstQueue: { "Fn::GetAtt" : [ FirstQueue, Arn ] }
+            - FirstQueue: { "Fn::GetAtt" : [ FirstQueue, QueueName ] }
         responses:
           default:
             statusCode: "200"
         requestParameters:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
-          application/json: "Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body)"
+          application/json: Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body).replaceAll("\\","")
         passthroughBehavior: never
         httpMethod: POST
         type: aws
@@ -43,12 +39,10 @@ components:
     SendToQueueApiRequest:
       type: object
       required:
-        - message
+        - word1
+        - word2
       properties:
-        message:
+        word1:
           type: string
-    SendToQueueApiResponse:
-      type: object
-      properties:
-        message:
+        word2:
           type: string
