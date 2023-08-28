@@ -10,6 +10,12 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  DeployStage:
+    Type: String
+    Default: "Dev"
+
+
 Resources:
   SqsExercizeFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -58,7 +64,7 @@ Resources:
   SqsExercizeApiGateway:
     Type: AWS::Serverless::Api
     Properties:
-      StageName: Staging
+      StageName: !Ref DeployStage
       DefinitionBody:
         Fn::Transform:
           Name: AWS::Include
@@ -89,7 +95,7 @@ Outputs:
   SqsExercizeApi:
     Description: "API Gateway endpoint URL for Prod stage for Sqs Exercize function"
     Value: 
-      Fn::Sub: "https://${SqsExercizeApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/sqs/"
+      Fn::Sub: "https://${SqsExercizeApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${DeployStage}/sqs/"
   SqsExercizeFunction:
     Description: "Sqs Exercize Lambda Function ARN"
     Value: 

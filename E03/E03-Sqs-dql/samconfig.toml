@@ -20,6 +20,7 @@ resolve_s3 = true
 s3_prefix = "E03-Sqs-dql"
 region = "eu-west-1"
 image_repositories = []
+parameter_overrides = "DeployStage=\"Dev\""
 
 [default.package.parameters]
 resolve_s3 = true
