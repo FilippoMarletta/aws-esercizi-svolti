@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: 
-  E03-Sqs-dql
+  Sqs-dlq
 
-  Sample SAM Template for E03-Sqs-dql
+  Simple queue service to Lambda Function with dead letter queue 
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
