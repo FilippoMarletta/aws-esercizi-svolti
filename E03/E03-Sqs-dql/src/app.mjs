@@ -12,27 +12,24 @@
  */
 
 
-function validityCheck( record ){
-    //console.log(record.body)
+async function validityCheck( record ){
     let s = record.body;
     const body = JSON.parse(s);
     const word1 = body.word1;
     const word2 = body.word2;
-    console.log(body);
-
-    return new Promise((resolve, reject) => {
-        let combined;
-        try {
-            combined = word1 + word2;
-            if(combined.length > 6){
-                reject(new Error(record.MessageId));
-            }
-            resolve({combinedWord: combined})
+    try
+    {
+        const combined = word1 + word2;
+        if(combined.length > 10)
+        {
+            throw Error;
         }
-        catch {
-            reject(new Error(record.MessageId));
-        }
-    })
+        return combined;
+    }
+    catch (err)
+    {
+        throw record.MessageId;
+    }
 }
 
 export const lambdaHandler = async (event, context) => {
