@@ -39,8 +39,9 @@ export const lambdaHandler = async (event, context) => {
         
         const executedPromises = await Promise.allSettled(promises);
         console.log(executedPromises);
-        const rejectedPromises = executedPromises.filter(promise => promise.status == "rejected");
-        const batchItemFailures = rejectedPromises.map( promise => ({itemIdentifier: promise.reason}) );
+        const batchItemFailures = executedPromises
+            .filter(promise => promise.status == "rejected")
+            .map(promise => ({itemIdentifier: promise.reason}));
         return {batchItemFailures};
     } catch (err) {
         console.log(err);
