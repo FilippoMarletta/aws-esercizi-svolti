@@ -1,0 +1,42 @@
+openapi: 3.0.1
+info:
+  title: MyApi to Lambda
+  description: Simple Api
+  version: 1.0.0
+x-amazon-apigateway-request-validators:
+  RequestModelPayload:
+    validateRequestParameters: true
+    validateRequestBody: true
+paths:
+  /send:
+    post:
+      summary: SendToLambda
+      description: SendToLambda
+      x-amazon-apigateway-request-validator: "RequestModelPayload"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsertRequest"
+      responses:
+        "200":
+          description: 200 response
+components:
+  schemas:
+    InsertRequest:
+      type: object
+      required:
+        - film-Id
+        - genere
+        - title
+        - description
+      properties:
+        film-Id:
+          type: string
+        genere:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+      additionalProperties: false
