@@ -13,6 +13,7 @@
 
 async function validityCheck (record) {
   const s = record.body
+  console.log(s)
   const body = JSON.parse(s)
   const word1 = body.word1
   const word2 = body.word2
@@ -23,20 +24,21 @@ async function validityCheck (record) {
     }
     return combined
   } catch (err) {
-    throw record.MessageId
+    throw new Error(record.messageId)
   }
 }
 
 export const lambdaHandler = async (event, context) => {
   try {
+    console.log(event)
     const records = event.Records
     const promises = records.map(record => validityCheck(record))
-
     const executedPromises = await Promise.allSettled(promises)
     console.log(executedPromises)
     const batchItemFailures = executedPromises
       .filter(promise => promise.status === 'rejected')
-      .map(promise => ({ itemIdentifier: promise.reason }))
+      .map(promise => ({ itemIdentifier: promise.reason.message }))
+    console.log(batchItemFailures)
     return { batchItemFailures }
   } catch (err) {
     console.log(err)

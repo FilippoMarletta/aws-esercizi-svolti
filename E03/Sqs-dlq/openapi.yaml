@@ -30,7 +30,7 @@ paths:
         requestParameters:
           integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
         requestTemplates:
-          application/json: Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body).replaceAll("\\","")
+          application/json: Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body).replaceAll('\\"','"').replaceAll('\\n','')
         passthroughBehavior: never
         httpMethod: POST
         type: aws
