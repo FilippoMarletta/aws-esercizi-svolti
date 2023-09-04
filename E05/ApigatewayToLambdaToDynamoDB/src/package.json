@@ -7,6 +7,10 @@
   "author": "SAM CLI",
   "license": "MIT",
   "dependencies": {
+    "@aws-lambda-powertools/logger": "^1.12.1",
+    "@aws-sdk/client-dynamodb": "^3.405.0",
+    "@aws-sdk/lib-dynamodb": "^3.405.0",
+    "aws-sdk": "^2.1450.0",
     "axios": ">=0.21.1",
     "react": "^18.2.0"
   },

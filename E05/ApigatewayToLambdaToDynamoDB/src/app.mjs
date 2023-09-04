@@ -5,7 +5,8 @@ import { DynamoDBDocumentClient, UpdateCommand } from '@aws-sdk/lib-dynamodb'
 const logger = new Logger({ serviceName: 'serverlessDynamoDB', logLevel: 'DEBUG' })
 
 const ddbClient = new DynamoDBClient({})
-const ddbDocumentClient = new DynamoDBDocumentClient.from(ddbClient)
+// eslint-disable-next-line new-cap
+const ddbDocumentClient = new DynamoDBDocumentClient(ddbClient)
 
 /**
  *
@@ -27,13 +28,13 @@ export const lambdaHandler = async (event, context) => {
 
   try {
     const response = await ddbDocumentClient.send(new UpdateCommand({
-      TableName: process.env.DynamoDB_TABLE,
+      TableName: process.env.DYNAMODB_TABLE,
       Key: {
-        FilmId: body.filmId
+        FilmId: body.filmId,
+        Genere: body.genere
       },
-      UpdateExpression: 'set Genere = :genere, Title = :title',
+      UpdateExpression: 'set Title = :title',
       ExpressionAttributeValues: {
-        ':genere': body.genere,
         ':title': body.title
       },
       ReturnValues: 'ALL_NEW'
