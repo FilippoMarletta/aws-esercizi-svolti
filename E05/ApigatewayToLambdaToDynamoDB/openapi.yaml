@@ -8,7 +8,7 @@ x-amazon-apigateway-request-validators:
     validateRequestParameters: true
     validateRequestBody: true
 paths:
-  /send:
+  /writeToDB:
     post:
       summary: SendToLambda
       description: SendToLambda
@@ -21,22 +21,34 @@ paths:
       responses:
         "200":
           description: 200 response
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: E05ApiGatewayLambdaRole.Arn
+        uri:
+          Fn::Sub: "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:E05LambdaFunction/invocations"
+        responses:
+          default:
+            statusCode: "200"
+        requestParameters:
+          integration.request.header.Content-Type: "'application/x-www-form-urlencoded'"
+        requestTemplates:
+          application/json: Action=SendMessage&MessageBody=$util.escapeJavaScript($input.body).replaceAll("\\","")
+        passthroughBehavior: never
+        httpMethod: POST
+        type: aws
 components:
   schemas:
     InsertRequest:
       type: object
       required:
-        - film-Id
+        - filmId
         - genere
         - title
-        - description
       properties:
-        film-Id:
-          type: string
+        filmId:
+          type: integer
         genere:
           type: string
         title:
-          type: string
-        description:
           type: string
       additionalProperties: false

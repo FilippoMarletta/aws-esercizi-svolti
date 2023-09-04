@@ -10,8 +10,13 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  DeployStage:
+    Type: String
+    Default: "Dev"
+  
 Resources:
-  LambdaFunction:
+  E05LambdaFunction:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: src/
@@ -19,5 +24,68 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
+      Environment:
+        Variables:
+          POWERTOOLS_DEV: true
+          
+  E05NewApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: E05NewApiGateway
+      StageName: !Ref DeployStage
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: ./openapi.yaml
+
+  E05ApiGatewayLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: 
+        Fn::Sub: '${AWS::StackName}-E05ApiGatewayLambdaRole'
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: e05LambdaFunctionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt E05LambdaFunction.Arn
+      
+  E05DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: FilmId
+          KeyType: HASH
+        - AttributeName: Genere
+          KeyType: RANGE
+      TableName: E05-Film
+      AttributeDefinitions:
+        - AttributeName: FilmId
+          AttributeType: S
+        - AttributeName: Genere
+          AttributeType: S
+Outputs:
+  OpenapiUri:
+    Description: Integration uri
+    Value: !Sub "${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${E05LambdaFunction}/invocations"
+  
+  LambdaFunctionArn:
+    Description: Lambda Function Arn
+    Value: !GetAtt E05LambdaFunction.Arn
+              
+
 
         
